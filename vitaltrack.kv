@@ -1,0 +1,94 @@
+<LoginScreen>:
+    username: username
+    password: password  # Bind the password TextInput to the password variable
+    BoxLayout:
+        orientation: 'vertical'
+        
+        TextInput:
+            id: username
+            hint_text: "Username"
+        
+        TextInput:
+            id: password
+            hint_text: "Password"
+            password: True  # Ensure password input is masked
+            multiline: False
+        
+        Button:
+            text: "Login"
+            on_press: root.login()
+        
+        Label:
+            id: login_status
+
+<RegisterScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 20
+
+        Label:
+            text: "Register"
+            font_size: 32
+
+        TextInput:
+            id: username
+            hint_text: "Username"
+            multiline: False
+
+        TextInput:
+            id: password
+            hint_text: "Password"
+            password: True
+            multiline: False
+
+        TextInput:
+            id: height
+            hint_text: "Height (cm)"
+            multiline: False
+
+        TextInput:
+            id: weight
+            hint_text: "Weight (kg)"
+            multiline: False
+
+        TextInput:
+            id: email
+            hint_text: "Email"
+            multiline: False
+
+        Button:
+            text: "Register"
+            on_press: root.register()
+
+        Button:
+            text: "Go to Login"
+            on_press: app.root.current = "login"
+
+<DashboardScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 20
+
+        Label:
+            text: "Dashboard"
+            font_size: 32
+
+        TextInput:
+            hint_text: "Enter food item"
+            multiline: False
+            on_text: self.food_item = self.text
+
+        Button:
+            text: "Log Food Intake"
+            on_press: root.log_food_intake(self.food_item)
+
+        Label:
+            id: food_status
+            text: ""
+            color: (0, 1, 0, 1)
+
+        Button:
+            text: "Logout"
+            on_press: app.root.current = "login"
