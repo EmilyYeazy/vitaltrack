@@ -2,9 +2,12 @@ import requests
 import csv
 import matplotlib.pyplot as plt
 from datetime import datetime
-from config import NUTRITION_API_KEY
+from config import Config
 
-import requests
+NUTRITIONIX_APP_ID = Config.NUTRITIONIX_APP_ID
+NUTRITIONIX_API_KEY = Config.NUTRITIONIX_API_KEY
+EXERCISE_DB_FILE = Config.NUTRITION_DB_FILE
+EXERCISE_END_POINT = Config.NUTRITION_END_POINT
 
 def get_food_info(food_item):
     # Get nutritional information for the given food item.
@@ -27,14 +30,15 @@ def get_food_info(food_item):
         print(f"Error: {e}")
         return None
 
-def log_food(food_data):
-    # Log food data to CSV.
+def log_food(username, food_data):
+    """Log food data to CSV, associated with the specific user."""
     if food_data:  # Check if food_data is not empty
         # Open the file in append mode
         with open("data/food_data.csv", mode='a', newline='') as file:
             writer = csv.writer(file)
-            # Write the food data in a new row
+            # Write the food data in a new row, including the username
             writer.writerow([
+                username,  # User's username
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Current timestamp
                 food_data['name'],  # Food name
                 food_data['calories'],  # Calories
@@ -42,10 +46,10 @@ def log_food(food_data):
                 food_data['protein'],  # Protein
                 food_data['fats']  # Fats
             ])
-        print("Food data logged.")
+        print(f"Food data logged for user {username}.")
 
-def visualize_food_data():
-    """Visualize food data (calories) over time."""
+def visualize_food_data(username, save=False):
+    """Visualize food data (calories) over time for a specific user."""
     dates = []
     calories = []
 
@@ -54,9 +58,10 @@ def visualize_food_data():
         with open("data/food_data.csv", mode='r') as file:
             reader = csv.reader(file)
             for row in reader:
-                # Assuming the timestamp is in the first column and calories are in the third column
-                dates.append(row[0])  # Timestamp
-                calories.append(int(row[2]))  # Calories
+                # Assuming the username is in the first column, timestamp is second, and calories is third
+                if row[0] == username:  # Check if the row corresponds to the user
+                    dates.append(row[1])  # Timestamp
+                    calories.append(int(row[3]))  # Calories
 
         # If we have data, plot it
         if dates and calories:
@@ -64,11 +69,16 @@ def visualize_food_data():
             plt.xticks(rotation=45, fontsize=8)  # Rotate x-axis labels for readability
             plt.xlabel('Date and Time')  # Label x-axis
             plt.ylabel('Calories')  # Label y-axis
-            plt.title('Calories Consumed Over Time')  # Title
-            plt.show()  # Show the plot
-
-        else:
-            print("No data to visualize.")  # No data available
+            plt.title(f'Calories Consumed Over Time for {username}')  # Title
+            
+            if save:
+                # Create the directory for saving images if it doesn't exist
+                save_dir = f"data/graph/{username}"
+                os.makedirs(save_dir, exist_ok=True)
+                plt.savefig(f"{save_dir}/food_data_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+                print(f"Food graph saved for {username}.")
+            else:
+                plt.show()  # Show the plot
 
     except FileNotFoundError:
         print("Food data file not found.")  # Handle the case where the file doesn't exist
