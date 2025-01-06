@@ -1,15 +1,5 @@
 import csv
 
-import csv
-
-import csv
-
-# Registration function
-import csv
-
-# Registration function
-import csv
-
 # Registration function
 def register_user(username, password, height, weight, email):
     # Ensure no field is empty
@@ -43,7 +33,7 @@ def register_user(username, password, height, weight, email):
         return False  # Return False if user already exists
 
     # If user does not exist, append new user data to the CSV file
-    with open('data/user.csv', 'a', newline='', encoding='utf-8') as file:
+    with open('data/user.csv', 'a', newline='\n', encoding='utf-8') as file:
         writer = csv.writer(file)
         # Debugging: Print data before writing
         print(f"Writing to file: {username}, {password}, {email}, {height}, {weight}")
@@ -54,11 +44,12 @@ def register_user(username, password, height, weight, email):
 
 def login_user(username, password):
     # Open the data/user.csv file and check for the entered username and password
-    with open('data/user.csv', 'r', newline='') as file:
+    with open('data/user.csv', 'r', newline='', encoding='utf-8') as file:
         reader = csv.reader(file)
         for row in reader:
-            print(f"Checking: Username: '{row[0]}', Password: '{row[1]}'")  # Debugging line
-            if row[0].strip() == username.strip() and row[1].strip() == password.strip():
+            if not row:  # Skip empty rows
+                continue
+            if row[0].strip().lower() == username.strip().lower() and row[1].strip() == password.strip():
                 print(f"Login successful! Welcome {username}!")
                 return True
 
@@ -69,7 +60,7 @@ def update_user(username, new_height, new_weight):
     users_updated = False
 
     # Read current users' data from the CSV file
-    with open('data/user.csv', 'r', newline='') as file:
+    with open('data/user.csv', 'r', newline='',encoding='utf-8') as file:
         reader = csv.reader(file)
         users = list(reader)
 
@@ -83,7 +74,7 @@ def update_user(username, new_height, new_weight):
 
     if users_updated:
         # Write updated data back to the CSV file
-        with open('data/user.csv', 'w', newline='') as file:
+        with open('data/user.csv', 'w', newline='\n') as file:
             writer = csv.writer(file)
             writer.writerows(users)  # Save all user data with the update
         print(f"User {username}'s details updated successfully!")
