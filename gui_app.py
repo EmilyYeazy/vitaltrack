@@ -2,21 +2,26 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 
-# Assuming your backend functions are correct
 from backend.authentication import register_user, login_user
 from backend.diet import log_food, get_food_info
 
 class LoginScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.password = ""  # Define password attribute for binding
 
     def login(self):
-        if login_user(self.ids.username.text, self.password):  # Use self.password here
-            self.manager.current = "dashboard"
+        # Retrieve input from text fields in the UI
+        username = self.ids.username.text
+        password = self.ids.password.text  # Use the password field from the UI
+
+        # Debugging: Print captured username and password
+        print(f"Attempting login with Username: '{username}', Password: '{password}'")
+
+        if login_user(username, password):  # Call the login_user function
+            self.manager.current = "dashboard"  # Navigate to the dashboard on success
         else:
             self.ids.login_status.text = "Invalid credentials. Try again!"
-
+            
 class RegisterScreen(Screen):
     def register(self):
         # Ensure all fields are accessible via ids
