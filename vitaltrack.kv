@@ -1,26 +1,3 @@
-<LoginScreen>:
-    username: username
-    password: password  # Bind the password TextInput to the password variable
-    BoxLayout:
-        orientation: 'vertical'
-        
-        TextInput:
-            id: username
-            hint_text: "Username"
-        
-        TextInput:
-            id: password
-            hint_text: "Password"
-            password: True  # Ensure password input is masked
-            multiline: False
-        
-        Button:
-            text: "Login"
-            on_press: root.login()
-        
-        Label:
-            id: login_status
-
 <RegisterScreen>:
     BoxLayout:
         orientation: "vertical"
@@ -52,43 +29,426 @@
             hint_text: "Weight (kg)"
             multiline: False
 
-        TextInput:
-            id: email
-            hint_text: "Email"
-            multiline: False
-
         Button:
             text: "Register"
             on_press: root.register()
+
+        Label:
+            id: register_status
+            color: 1, 0, 0, 1
 
         Button:
             text: "Go to Login"
             on_press: app.root.current = "login"
 
-<DashboardScreen>:
+<LoginScreen>:
+    username: username
+    password: password
     BoxLayout:
-        orientation: "vertical"
-        spacing: 10
-        padding: 20
-
-        Label:
-            text: "Dashboard"
-            font_size: 32
-
+        orientation: 'vertical'
+        
         TextInput:
-            hint_text: "Enter food item"
+            id: username
+            hint_text: "Username"
+        
+        TextInput:
+            id: password
+            hint_text: "Password"
+            password: True  # Ensure password input is masked
             multiline: False
-            on_text: self.food_item = self.text
+        
+        Button:
+            text: "Login"
+            on_press: root.login()
+        
+        Label:
+            id: login_status
 
         Button:
-            text: "Log Food Intake"
-            on_press: root.log_food_intake(self.food_item)
+            text: "Go to Register"
+            on_press: root.go_to_register()
+
+<DashboardScreen>:
+    name: "dashboard"
+    FloatLayout:
+        Label:
+            text: "Dashboard"
+            font_size: 48
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.9}
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: 600, 300
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            spacing: 20
+
+            Button:
+                text: "Diet"
+                font_size: 24
+                on_press: root.go_to_diet()
+
+            Button:
+                text: "Exercise"
+                font_size: 24
+                on_press: root.go_to_exercise()
+
+            Button:
+                text: "Update"
+                font_size: 24
+                on_press: root.update_dashboard()
+
+            Button:
+                text: "Graph"
+                font_size: 24
+                on_press: root.go_to_graph()
+
+            Button:
+                text: "Close"
+                font_size: 24
+                on_press: root.close()
 
         Label:
             id: food_status
             text: ""
             color: (0, 1, 0, 1)
+            font_size: 20  # Adjust font size for status
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "y": 0.1}
+
+<DietScreen>:
+    name: 'diet_screen'
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+
+        # Food Info Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            TextInput:
+                id: food_input
+                hint_text: 'Enter food item'
+                multiline: False
+                size_hint_x: 0.8
+                height: 40
+
+            Button:
+                text: 'Get Food Info'
+                size_hint_x: 0.2
+                on_press: root.get_food_info(food_input.text)
+
+        # Show Food Info Section
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [10, 10, 10, 10]
+            spacing: 10
+
+            Label:
+                id: food_info
+                text: "Food Info will appear here."
+                valign: 'top'
+                halign: 'left'
+                size_hint_y: None
+                height: 100
+                font_size: 18
+
+        # Log Food Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            Button:
+                text: 'Log Food'
+                on_press: root.log_food(food_input.text)
+
+        # Success Message Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            Label:
+                id: success_message
+                text: ""
+                color: 0, 1, 0, 1  # Green text for success message
+                font_size: 16
+                size_hint_x: 0.8
+                valign: 'middle'
+                halign: 'center'
+
+        # Back to Dashboard Button
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            Button:
+                text: 'Back to Dashboard'
+                size_hint_x: 1
+                on_press: app.root.current = 'dashboard'
+
+<ExerciseScreen>:
+    name: 'exercise_screen'
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+
+        # Exercise Info Input Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            TextInput:
+                id: exercise_input
+                hint_text: 'Enter exercise activity'
+                multiline: False
+                size_hint_x: 0.8
+                height: 40
+
+            Button:
+                text: 'Get Exercise Info'
+                size_hint_x: 0.2
+                on_press: root.get_exercise_info(exercise_input.text)
+
+        # Show Exercise Info Section
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [10, 10, 10, 10]
+            spacing: 10
+
+            Label:
+                id: exercise_info
+                text: "Exercise info will appear here."
+                valign: 'top'
+                halign: 'left'
+                size_hint_y: None
+                height: 100
+                font_size: 18
+
+        # Log Exercise Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            Button:
+                text: 'Log Exercise'
+                on_press: root.log_exercise(exercise_input.text)
+
+        # Success Message Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            Label:
+                id: success_message
+                text: ""
+                color: 0, 1, 0, 1  # Green text for success message
+                font_size: 16
+                size_hint_x: 0.8
+                valign: 'middle'
+                halign: 'center'
+
+        # Back to Dashboard Button
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 50
+
+            Button:
+                text: 'Back to Dashboard'
+                size_hint_x: 1
+                on_press: app.root.current = 'dashboard'
+
+<UpdateScreen>:
+    name: "update_screen"
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [20, 50]
+        spacing: 20
+
+        Label:
+            text: "Update Settings"
+            font_size: 32
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5}
 
         Button:
-            text: "Logout"
-            on_press: app.root.current = "login"
+            text: "Update User Settings"
+            font_size: 24
+            on_press: root.go_to_user_settings_update()
+
+        Button:
+            text: "Update Body Data"
+            font_size: 24
+            on_press: root.go_to_body_data_update()
+
+        Button:
+            text: "Back to Dashboard"
+            font_size: 24
+            on_press: root.back_to_dashboard()
+
+<UserSettingsUpdateScreen>:
+    name: "user_settings_update_screen"
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [20, 50]
+        spacing: 20
+
+        Label:
+            text: "Update User Settings"
+            font_size: 32
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5}
+
+        TextInput:
+            id: password_input
+            hint_text: "Enter new password"
+            multiline: False
+            size_hint: 1, None
+            height: 40
+
+        Button:
+            text: "Save Changes"
+            font_size: 24
+            on_press: root.save_user_settings()
+
+        Button:
+            text: "Back"
+            font_size: 24
+            on_press: root.back_to_update_screen()
+
+<BodyDataUpdateScreen>:
+    name: "body_data_update_screen"
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [20, 50]
+        spacing: 20
+
+        Label:
+            text: "Update Body Data"
+            font_size: 32
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5}
+
+        TextInput:
+            id: height_input
+            hint_text: "Enter new height (cm)"
+            multiline: False
+            size_hint: 1, None
+            height: 40
+
+        TextInput:
+            id: weight_input
+            hint_text: "Enter new weight (kg)"
+            multiline: False
+            size_hint: 1, None
+            height: 40
+
+        Button:
+            text: "Save Changes"
+            font_size: 24
+            on_press: root.save_body_data()
+
+        Button:
+            text: "Back"
+            font_size: 24
+            on_press: root.back_to_update_screen()
+
+<SelectGraphScreen>:
+    name: 'select_graph'
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1  # Black background
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        Label:
+            text: "Choose the graph type to display"
+            font_size: 32
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.9}
+            color: (1, 1, 1, 1)  # White text color
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: 600, 300
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            spacing: 20
+
+            Button:
+                text: "Calories"
+                font_size: 24
+                on_press: root.select_graph('Calories')
+
+            Button:
+                text: "Micronutrient"
+                font_size: 24
+                on_press: root.select_graph('Micronutrient')
+
+            Button:
+                text: "Weight"
+                font_size: 24
+                on_press: root.select_graph('Weight')
+
+            Button:
+                text: "BMI"
+                font_size: 24
+                on_press: root.select_graph('BMI')
+
+        Button:
+            text: "Back to Dashboard"
+            font_size: 24
+            size_hint_y: 0.2
+            pos_hint: {"center_x": 0.5, "bottom": 0.1}
+            on_press: root.manager.current = 'dashboard'
+
+<GenerateGraphScreen>:
+    name: 'generate_graph'
+    FloatLayout:
+        Label:
+            id: graph_type_label
+            text: "Selected Graph: "
+            font_size: 32
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.9}
+
+        BoxLayout:
+            id: graph_canvas
+            size_hint: 0.8, 0.4
+            pos_hint: {"center_x": 0.5, "center_y": 0.7}
+
+        Button:
+            text: "Generate Graph"
+            font_size: 24
+            size_hint_y: 0.15
+            pos_hint: {"center_x": 0.5, "center_y": 0.4}
+            on_press: root.generate_graph()
+
+        Button:
+            text: "Back to Select Graph"
+            font_size: 24
+            size_hint_y: 0.15
+            pos_hint: {"center_x": 0.5, "center_y": 0.05}
+            on_press: root.manager.current = 'select_graph'
