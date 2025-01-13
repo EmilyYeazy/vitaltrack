@@ -3,6 +3,12 @@ import pandas as pd
 import csv
 from datetime import datetime
 import os
+import logging
+
+logging.getLogger('PIL').setLevel(logging.WARNING)
+logging.getLogger('matplotlib').setLevel(logging.ERROR)
+
+plt.rcParams['font.family'] = 'Arial'
 
 def load_data_from_csv(username):
     # Load nutrition data
@@ -13,46 +19,56 @@ def load_data_from_csv(username):
     exercise_data = pd.read_csv('data/exercise_data.csv')
     exercise_data = exercise_data[exercise_data['Username'].str.strip().str.lower() == username.strip().lower()]
 
+    # Clean and process exercise data
+    exercise_data.columns = exercise_data.columns.str.strip()  # Remove leading/trailing spaces from column names
+    exercise_data['Calories Burned'] = pd.to_numeric(exercise_data['Calories Burned'], errors='coerce')
+
     # Get height and weight from the user.csv file
     try:
         user_data = pd.read_csv('data/user.csv')  # Load the user.csv file
         user_data = user_data[user_data['username'].str.strip().str.lower() == username.strip().lower()]  # Use 'username' for comparison
-        weight = user_data['weight'].iloc[-1] if not user_data.empty else None  # Use 'weight' column
-        height = user_data['height'].iloc[0] if not user_data.empty else None  # Use 'height' column
+        weight_data = user_data[['registration_date', 'weight']] if not user_data.empty else None
+        height_data = user_data[['registration_date', 'height']] if not user_data.empty else None
     except FileNotFoundError:
-        weight, height = None, None
+        weight_data, height_data = None, None
 
-    return nutrition_data, exercise_data, height, weight
+    return nutrition_data, exercise_data, height_data, weight_data  # Return weight data as a DataFrame
 
-def save_graph(plt, filename):
-    # Ensure the 'data/graph' folder exists, create it if not
-    if not os.path.exists('data/graph'):
-        os.makedirs('data/graph')
-    
-    # Save the figure to 'data/graph' folder
-    file_path = f"data/graph/{filename}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-    plt.savefig(file_path)
-    print(f"Graph saved as {file_path}")
+def plot_calories(username, nutrition_data, exercise_data):
+    # Ensure correct column names exist in the DataFrames
+    if 'Date' not in nutrition_data.columns or 'Calories' not in nutrition_data.columns:
+        print("Error: Nutrition data is missing required columns.")
+        return None
 
-def plot_calories(username, nutrition_data, exercise_data, save=False):
+    if 'Date' not in exercise_data.columns or 'Calories Burned' not in exercise_data.columns:
+        print("Error: Exercise data is missing required columns.")
+        return None
+
+    # Filter data for the specific user
     user_nutrition_data = nutrition_data[nutrition_data['Username'] == username]
     user_exercise_data = exercise_data[exercise_data['Username'] == username]
 
     if user_nutrition_data.empty and user_exercise_data.empty:
         print(f"No data available for {username}.")
-        return
+        return None
 
+    # Convert 'Date' column to datetime and strip the time part
+    user_nutrition_data['Date'] = pd.to_datetime(user_nutrition_data['Date']).dt.date
+    user_exercise_data['Date'] = pd.to_datetime(user_exercise_data['Date']).dt.date
+
+    # Group and aggregate data by date
     user_nutrition_data_grouped = user_nutrition_data.groupby('Date')['Calories'].sum()
-    user_exercise_data_grouped = user_exercise_data.groupby('Date')['Calories_Burned'].sum()
+    user_exercise_data_grouped = user_exercise_data.groupby('Date')['Calories Burned'].sum()
 
+    # Combine both datasets into a single DataFrame
     combined_data = pd.DataFrame({
-        'Calories_Consumed': user_nutrition_data_grouped,
-        'Calories_Burned': user_exercise_data_grouped
+        'Calories Consumed': user_nutrition_data_grouped,
+        'Calories Burned': user_exercise_data_grouped
     }).fillna(0)
 
     plt.figure(figsize=(10, 6))
-    plt.plot(combined_data.index, combined_data['Calories_Consumed'], label="Calories Consumed", color="blue", marker="o")
-    plt.plot(combined_data.index, combined_data['Calories_Burned'], label="Calories Burned", color="red", marker="o")
+    plt.plot(combined_data.index, combined_data['Calories Consumed'], label="Calories Consumed", color="blue", marker="o")
+    plt.plot(combined_data.index, combined_data['Calories Burned'], label="Calories Burned", color="red", marker="o")
 
     plt.title(f"Calories Consumed vs. Burned for {username}", fontsize=14)
     plt.xlabel("Date")
@@ -61,12 +77,10 @@ def plot_calories(username, nutrition_data, exercise_data, save=False):
     plt.xticks(rotation=45)
     plt.tight_layout()
 
-    if save:
-        save_graph(plt, f"calories_{username}")
-    else:
-        plt.show()
+    # Show the plot
+    plt.show()
 
-def plot_macronutrient_distribution(nutrition_data, username=None, save=False):
+def plot_micronutrient_distribution(nutrition_data, username=None):
     if username:
         user_nutrition_data = nutrition_data[nutrition_data['Username'] == username]
     else:
@@ -74,6 +88,11 @@ def plot_macronutrient_distribution(nutrition_data, username=None, save=False):
 
     if user_nutrition_data.empty:
         print(f"No nutrition data available for {username if username else 'the user'}.")
+        return
+
+    # Ensure that the column names are correct
+    if 'Carbs' not in user_nutrition_data.columns or 'Protein' not in user_nutrition_data.columns or 'Fats' not in user_nutrition_data.columns:
+        print("Error: Missing macronutrient columns.")
         return
 
     total_carbs = user_nutrition_data['Carbs'].sum()
@@ -93,63 +112,72 @@ def plot_macronutrient_distribution(nutrition_data, username=None, save=False):
 
     plt.axis('equal')
 
-    if save:
-        save_graph(plt, f"macronutrients_{username}")
-    else:
-        plt.show()
+    plt.show()
 
-def plot_weight(username, save=False):
-    nutrition_data, exercise_data, height, weight = load_data_from_csv(username=username)
+def plot_weight(username, weight_data):
+    # Ensure 'registration_date' and 'weight' are passed as series
+    if weight_data is None or 'registration_date' not in weight_data or 'weight' not in weight_data:
+        print("Error: Missing data for weight or registration date.")
+        return None
 
-    if weight is None:
-        print("No weight data available for the user.")
-        return
-
-    weeks = ["Week 1", "Week 2", "Week 3", "Week 4"]
-    weight_data = [weight] * len(weeks)
-
-    df = pd.DataFrame({
-        "Week": weeks,
-        "Weight": weight_data
+    # Sort by registration date to ensure proper plotting
+    data = pd.DataFrame({
+        'registration_date': weight_data['registration_date'],
+        'weight': weight_data['weight']
     })
 
+    # Convert 'registration_date' column to datetime
+    data['registration_date'] = pd.to_datetime(data['registration_date'])
+
+    # Sort by registration date
+    data = data.sort_values(by='registration_date')
+
+    # Plot weight data
     plt.figure(figsize=(10, 6))
-    plt.plot(df['Week'], df['Weight'], label=f"Weight ({username})", color="green", marker="o")
+    plt.plot(data['registration_date'], data['weight'], label=f"Weight ({username})", color="green", marker="o")
 
-    plt.title(f"Weekly Weight Change for {username}", fontsize=14)
-    plt.xlabel("Week")
+    plt.title(f"Weight Change Over Time for {username}", fontsize=14)
+    plt.xlabel("Date")
     plt.ylabel("Weight (kg)")
+    plt.xticks(rotation=45)  # Rotate date labels for better readability
     plt.legend()
+
     plt.tight_layout()
-
-    if save:
-        save_graph(plt, f"weight_{username}")
-    else:
-        plt.show()
-
+    plt.show()
+    
 def calculate_bmi(weight, height):
     if height == 0:
         return 0  # Avoid division by zero if height is not available
-    return weight / (height ** 2)
+    height_in_meters = height / 100  # Convert height from cm to meters
+    return weight / (height_in_meters ** 2)  # Correct BMI formula
 
-def plot_bmi(username, weight_data, save=False):
+def plot_bmi(username, weight_data, height_data):
     nutrition_data, exercise_data, height, weight = load_data_from_csv(username=username)
 
-    if height is None or weight is None:
+    if height is None or weight_data is None or height_data is None:
         print("Unable to calculate BMI due to missing data.")
         return
 
-    bmi_data = [calculate_bmi(weight, height) for weight in weight_data]
+    # Ensure that weight_data and height_data are populated correctly
+    # Assuming weight_data and height_data are pandas DataFrames containing 'registration_date' and 'weight'/'height'
+    if len(weight_data) != len(height_data):
+        print("Weight data and height data lengths do not match.")
+        return
 
+    bmi_data = []
+    for i in range(len(weight_data)):
+        weight = weight_data.iloc[i]['weight']
+        height = height_data.iloc[i]['height']
+        bmi = calculate_bmi(weight, height)  # Correct BMI calculation
+        bmi_data.append(bmi)
+
+    # Plotting the BMI over time (based on registration_date)
     plt.figure(figsize=(10, 5))
-    plt.plot(range(len(bmi_data)), bmi_data, marker='o', color='b', label='BMI')
+    plt.plot(weight_data['registration_date'], bmi_data, marker='o', color='b', label='BMI')
     plt.xlabel('Weeks')
     plt.ylabel('BMI')
     plt.title(f'BMI for {username}')
     plt.legend()
     plt.grid(True)
 
-    if save:
-        save_graph(plt, f"bmi_{username}")
-    else:
-        plt.show()
+    plt.show()
