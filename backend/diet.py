@@ -70,37 +70,3 @@ def log_food(username, food_data):
                 username  # Username
             ])
         print(f"Food data logged for user {username}.")
-
-def visualize_food_data(username, save=False):
-    """
-    Visualize food data (calories) over time for a specific user.
-    """
-    dates, calories = [], []
-
-    try:
-        with open("data/food_data.csv", mode='r') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                if row[0] == username:
-                    dates.append(row[1])
-                    calories.append(float(row[3]))
-
-        if dates and calories:
-            plt.plot(dates, calories, marker='o', color='green')
-            plt.xticks(rotation=45, fontsize=8)
-            plt.xlabel('Date and Time')
-            plt.ylabel('Calories')
-            plt.title(f'Calories Consumed Over Time for {username}')
-
-            if save:
-                save_dir = f"data/graph/{username}"
-                os.makedirs(save_dir, exist_ok=True)
-                plt.savefig(f"{save_dir}/food_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
-                print(f"Graph saved for user {username}.")
-            else:
-                plt.show()
-
-    except FileNotFoundError:
-        print("Food data file not found.")
-    except Exception as e:
-        print(f"Error visualizing data: {e}")
