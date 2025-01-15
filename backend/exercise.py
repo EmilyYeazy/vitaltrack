@@ -49,34 +49,3 @@ def log_to_csv(username, exercise_input, exercises):
                     username  # Username
                 ])
         print(f"Exercise data logged for user {username}.")
-
-def visualize_exercise_data(username):
-    """Visualize exercise data (calories burned) over time for a specific user."""
-    dates = []
-    calories = []
-
-    try:
-        # Read all the data from the CSV file
-        with open("data/exercise_data.csv", mode='r') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                if row[0] == username:  # Only process data for the specific user
-                    dates.append(row[1])  # Timestamp
-                    calories.append(int(row[4]))  # Calories burned
-
-        # If we have data, plot it
-        if dates and calories:
-            plt.plot(dates, calories, marker='o', color='blue')  # Simple line plot
-            plt.xticks(rotation=45, fontsize=8)  # Rotate x-axis labels
-            plt.xlabel('Date and Time')  # Label x-axis
-            plt.ylabel('Calories Burned')  # Label y-axis
-            plt.title(f'Calories Burned Over Time for {username}')  # Title
-            plt.tight_layout()  # Adjust the layout to fit labels
-            plt.show()  # Show the plot
-        else:
-            print(f"No exercise data available for user {username}.")  # No data available for the user
-
-    except FileNotFoundError:
-        print("Exercise data file not found.")
-    except Exception as e:
-        print(f"Error: {e}")
