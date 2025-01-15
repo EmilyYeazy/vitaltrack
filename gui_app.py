@@ -37,12 +37,17 @@ class RegisterScreen(Screen):
         height = self.ids.height.text.strip()
         weight = self.ids.weight.text.strip()
 
+        # Check if height and weight are numeric
+        if not height.isnumeric() or not weight.isnumeric():
+            self.ids.register_status.text = "Height and Weight must be numeric values."  # Show error message
+            return
+        
         # Call the register_user function with the gathered data
         if not register_user(username, password, height, weight):
             # If the user already exists, the register_user function will return False
             self.ids.register_status.text = "User already exists! Proceed to Login!"  # Show message in the register_status label
             return
-        
+
         # If registration is successful, switch to the login screen
         self.manager.current = "login"
 
