@@ -137,7 +137,7 @@ def plot_weight(username, weight_data):
     plt.plot(data['registration_date'], data['weight'], label=f"Weight ({username})", color="green", marker="o")
 
     plt.title(f"Weight Change Over Time for {username}", fontsize=14)
-    plt.xlabel("Date")
+    plt.xlabel("Time")
     plt.ylabel("Weight (kg)")
     plt.xticks(rotation=45)  # Rotate date labels for better readability
     plt.legend()
@@ -174,7 +174,7 @@ def plot_bmi(username, weight_data, height_data):
     # Plotting the BMI over time (based on registration_date)
     plt.figure(figsize=(10, 5))
     plt.plot(weight_data['registration_date'], bmi_data, marker='o', color='b', label='BMI')
-    plt.xlabel('Weeks')
+    plt.xlabel('Time')
     plt.ylabel('BMI')
     plt.title(f'BMI for {username}')
     plt.legend()
