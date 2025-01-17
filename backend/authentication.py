@@ -24,7 +24,7 @@ def register_user(username, password, height, weight):
             for row in reader:
                 if row and row[0] == username:
                     user_exists = True
-                    break  # Exit the loop early if user is found
+                    break
     except FileNotFoundError:
         # If file does not exist, we can create it with headers
         print("File not found. Creating a new file.")
@@ -32,7 +32,7 @@ def register_user(username, password, height, weight):
 
     if user_exists:
         print("User already exists!")
-        return False  # Return False if user already exists
+        return False 
 
     # If user does not exist, append new user data to the CSV file
     with open('data/user.csv', 'a', newline='', encoding='utf-8') as file:
@@ -42,7 +42,7 @@ def register_user(username, password, height, weight):
         writer.writerow([username, password, height, weight, datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
 
     print("Registration successful!")
-    return True  # Return True if registration is successful
+    return True
 
 def login_user(username, password):
     # Open the data/user.csv file and check for the entered username and password
@@ -75,8 +75,8 @@ def update_settings(username, new_password):
 
     # Update the password for all rows with the matching username
     for row in user_rows:
-        if row[0] == username:  # If the username matches
-            row[1] = new_password  # Update password (index 1)
+        if row[0] == username:
+            row[1] = new_password
             users_updated = True
 
     if users_updated:
@@ -101,9 +101,9 @@ def update_data(username, new_weight, new_height):
 
     # Search for the user and update height and weight
     for row in users:
-        if row[0] == username:  # If the username matches
-            row[3] = new_height  # Correctly update height (index 3)
-            row[4] = new_weight   # Correctly update weight (index 4)
+        if row[0] == username:
+            row[3] = new_height
+            row[4] = new_weight
             users_updated = True
             break
 
