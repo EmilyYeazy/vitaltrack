@@ -1,6 +1,5 @@
 import requests
 import csv
-import matplotlib.pyplot as plt
 from datetime import datetime
 from config import config
 import os
@@ -24,9 +23,7 @@ def get_exercise_info(exercise_input):
         return []
 
 def log_to_csv(username, exercise_input, exercises):
-    """
-    Log exercise data to CSV, associated with a specific user.
-    """
+    # Log exercise data to CSV, associated with a specific user.
     if exercises:
         file_path = "data/exercise_data.csv"
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
