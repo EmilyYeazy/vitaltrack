@@ -39,13 +39,13 @@ class RegisterScreen(Screen):
 
         # Check if height and weight are numeric
         if not height.isnumeric() or not weight.isnumeric():
-            self.ids.register_status.text = "Height and Weight must be numeric values."  # Show error message
+            self.ids.register_status.text = "Height and Weight must be numeric values."
             return
         
         # Call the register_user function with the gathered data
         if not register_user(username, password, height, weight):
             # If the user already exists, the register_user function will return False
-            self.ids.register_status.text = "User already exists! Proceed to Login!"  # Show message in the register_status label
+            self.ids.register_status.text = "User already exists! Proceed to Login!"
             return
 
         # If registration is successful, switch to the login screen
@@ -57,11 +57,8 @@ class LoginScreen(Screen):
 
     def login(self):
         # Retrieve input from text fields in the UI
-        username = self.ids.username.text.strip()  # Trim whitespace
-        password = self.ids.password.text.strip()  # Trim whitespace
-
-        # Debugging: Print captured username and password
-        print(f"Attempting login with Username: '{username}', Password: '{password}'")
+        username = self.ids.username.text.strip()
+        password = self.ids.password.text.strip()
 
         if not username or not password:
             self.ids.login_status.text = "Please fill in both fields."
@@ -98,10 +95,12 @@ class DashboardScreen(Screen):
         # Navigate to the Exercise screen
         self.manager.current = "exercise_screen"
     
-    def update_dashboard(self):
+    def go_to_update(self):
+        # Navigate to the Update screen
         self.manager.current = "update_screen"
 
     def go_to_graph(self):
+        # Navigate to the Graph screen
         self.manager.current = 'select_graph'
 
     def close(self):
@@ -112,8 +111,8 @@ class DietScreen(Screen):
     def on_enter(self):
         # Reset the food log input field when entering the screen
         self.ids.food_input.text = ''
-        self.ids.food_info.text = ''  # Clear the food info label
-        self.ids.success_message.text = ''  # Clear any success/error messages
+        self.ids.food_info.text = ''
+        self.ids.success_message.text = '' 
 
     def get_food_info(self, food_name):
         food_data = get_food_info(food_name)
@@ -144,16 +143,16 @@ class ExerciseScreen(Screen):
 
     def on_enter(self):
         # Clear the exercise input and results when entering the screen
-        self.ids.exercise_input.text = ""  # Clear the input field
-        self.ids.exercise_info.text = ""  # Clear the exercise details display
-        self.ids.success_message.text = ""  # Clear any success/failure messages
+        self.ids.exercise_input.text = "" 
+        self.ids.exercise_info.text = ""
+        self.ids.success_message.text = ""
 
     def get_exercise_info(self, exercise_input):
         # Fetch exercise data from the Nutritionix API
         exercises = get_exercise_info(exercise_input)
 
         if exercises:
-            # Display the first exercise's details (you can extend to multiple if needed)
+            # Display the first exercise's details
             exercise_details = "\n".join(
                 [f"Exercise: {exercise['name']}\nCalories Burned: {exercise.get('nf_calories', 0)} kcal"
                  for exercise in exercises]
@@ -163,7 +162,7 @@ class ExerciseScreen(Screen):
             self.ids.exercise_info.text = "Exercise info not found. Please check your input."
 
     def log_exercise(self, exercise_input):
-        username = self.manager.get_screen("dashboard").username  # Get the username
+        username = self.manager.get_screen("dashboard").username  # Get the info
         exercises = get_exercise_info(exercise_input)
 
         if exercises:
@@ -174,29 +173,32 @@ class ExerciseScreen(Screen):
 
 class UpdateScreen(Screen):
     def go_to_user_settings_update(self):
+        # Navigate to the User Setting screen
         """Navigate to User Settings Update page."""
         user_settings_update_screen = self.manager.get_screen("user_settings_update_screen")
         user_settings_update_screen.username = self.manager.get_screen("dashboard").username
         self.manager.current = "user_settings_update_screen"
 
     def go_to_body_data_update(self):
+        # Navigate to the Body Data Update screen
         """Navigate to Body Data Update page."""
         self.manager.current = "body_data_update_screen"
 
     def back_to_dashboard(self):
+        # Navigate to the Dashboard screen
         """Return to the Dashboard page."""
         self.manager.current = "dashboard"
 
 class UserSettingsUpdateScreen(Screen):
     def on_enter(self):
-        """Clear input fields when entering the screen."""
+        # Clear input fields when entering the screen.
         self.ids.password_input.text = ""
 
     def save_user_settings(self):
         # Get the input value for password from the text field
         password = self.ids.password_input.text
 
-        # Retrieve the username directly (passed from DashboardScreen)
+        # Retrieve the username directly
         username = self.username
 
         # Call the update_settings function to save the new settings
@@ -204,14 +206,14 @@ class UserSettingsUpdateScreen(Screen):
             success = update_settings(username, password)
             if success:
                 print(f"Settings for {username} updated successfully.")
-                self.manager.current = "update_screen"  # Navigate back to the Update screen
+                self.manager.current = "update_screen"
             else:
                 print(f"Update failed. User {username} not found.")
         else:
             print("Please fill in the password.")
     
     def back_to_update_screen(self):
-        """Go back to the Update Screen."""
+        # Go back to the Update Screen
         self.manager.current = "update_screen"
 
 class BodyDataUpdateScreen(Screen):
@@ -227,7 +229,7 @@ class BodyDataUpdateScreen(Screen):
 
         if height and weight:  # Ensure height and weight are provided
             # Ensure that we are passing the correct values in the correct order
-            success = update_data(username, weight, height)  # weight first, height second
+            success = update_data(username, weight, height) 
             if success:
                 print(f"User {username}'s body data updated successfully!")
                 self.manager.current = "update_screen"
@@ -245,7 +247,7 @@ class SelectGraphScreen(Screen):
         self.graph_type = None  # Initialize the graph type as None
 
     def select_graph(self, graph_type):
-        """Handle graph type selection and transition to the next screen."""
+        # Handle graph type selection and transition to the next screen
         self.graph_type = graph_type
 
         # Pass the selected graph type and username to the GenerateGraphScreen
@@ -259,8 +261,8 @@ class SelectGraphScreen(Screen):
 class GenerateGraphScreen(Screen):
     def __init__(self, **kwargs):
         super(GenerateGraphScreen, self).__init__(**kwargs)
-        self.graph_type = None  # Initialize graph_type as None
-        self.username = None  # Initialize username as None
+        self.graph_type = None 
+        self.username = None  
 
     def on_enter(self):
         # Ensure username is set before proceeding
