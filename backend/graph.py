@@ -2,11 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import csv
 from datetime import datetime
-import os
-import logging
-
-logging.getLogger('PIL').setLevel(logging.WARNING)
-logging.getLogger('matplotlib').setLevel(logging.ERROR)
 
 plt.rcParams['font.family'] = 'Arial'
 
@@ -20,19 +15,19 @@ def load_data_from_csv(username):
     exercise_data = exercise_data[exercise_data['Username'].str.strip().str.lower() == username.strip().lower()]
 
     # Clean and process exercise data
-    exercise_data.columns = exercise_data.columns.str.strip()  # Remove leading/trailing spaces from column names
+    exercise_data.columns = exercise_data.columns.str.strip()
     exercise_data['Calories Burned'] = pd.to_numeric(exercise_data['Calories Burned'], errors='coerce')
 
     # Get height and weight from the user.csv file
     try:
         user_data = pd.read_csv('data/user.csv')  # Load the user.csv file
-        user_data = user_data[user_data['username'].str.strip().str.lower() == username.strip().lower()]  # Use 'username' for comparison
+        user_data = user_data[user_data['username'].str.strip().str.lower() == username.strip().lower()] 
         weight_data = user_data[['registration_date', 'weight']] if not user_data.empty else None
         height_data = user_data[['registration_date', 'height']] if not user_data.empty else None
     except FileNotFoundError:
         weight_data, height_data = None, None
 
-    return nutrition_data, exercise_data, height_data, weight_data  # Return weight data as a DataFrame
+    return nutrition_data, exercise_data, height_data, weight_data
 
 def plot_calories(username, nutrition_data, exercise_data):
     # Ensure correct column names exist in the DataFrames
@@ -81,16 +76,17 @@ def plot_calories(username, nutrition_data, exercise_data):
     plt.show()
 
 def plot_micronutrient_distribution(nutrition_data, username=None):
+    # Check for username
     if username:
         user_nutrition_data = nutrition_data[nutrition_data['Username'] == username]
     else:
         user_nutrition_data = nutrition_data
 
+    # Check for nutrition data
     if user_nutrition_data.empty:
         print(f"No nutrition data available for {username if username else 'the user'}.")
         return
 
-    # Ensure that the column names are correct
     if 'Carbs' not in user_nutrition_data.columns or 'Protein' not in user_nutrition_data.columns or 'Fats' not in user_nutrition_data.columns:
         print("Error: Missing macronutrient columns.")
         return
@@ -112,10 +108,10 @@ def plot_micronutrient_distribution(nutrition_data, username=None):
 
     plt.axis('equal')
 
+    # Plot the Graph
     plt.show()
 
 def plot_weight(username, weight_data):
-    # Ensure 'registration_date' and 'weight' are passed as series
     if weight_data is None or 'registration_date' not in weight_data or 'weight' not in weight_data:
         print("Error: Missing data for weight or registration date.")
         return None
@@ -139,7 +135,7 @@ def plot_weight(username, weight_data):
     plt.title(f"Weight Change Over Time for {username}", fontsize=14)
     plt.xlabel("Time")
     plt.ylabel("Weight (kg)")
-    plt.xticks(rotation=45)  # Rotate date labels for better readability
+    plt.xticks(rotation=45) 
     plt.legend()
 
     plt.tight_layout()
@@ -147,9 +143,9 @@ def plot_weight(username, weight_data):
     
 def calculate_bmi(weight, height):
     if height == 0:
-        return 0  # Avoid division by zero if height is not available
-    height_in_meters = height / 100  # Convert height from cm to meters
-    return weight / (height_in_meters ** 2)  # Correct BMI formula
+        return 0 
+    height_in_meters = height / 100 
+    return weight / (height_in_meters ** 2) 
 
 def plot_bmi(username, weight_data, height_data):
     nutrition_data, exercise_data, height, weight = load_data_from_csv(username=username)
