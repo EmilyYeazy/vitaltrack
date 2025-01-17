@@ -1,6 +1,5 @@
 import requests
 import csv
-import matplotlib.pyplot as plt
 from datetime import datetime
 from config import config
 import os
@@ -11,9 +10,7 @@ NUTRITION_DB_FILE = config.NUTRITION_DB_FILE
 NUTRITION_END_POINT = config.NUTRITION_END_POINT
 
 def get_food_info(food_item):
-    """
-    Get nutritional information for the given food item using the Nutritionix API.
-    """
+    # Get nutritional information for the given food item using the Nutritionix API.
     url = f"https://trackapi.nutritionix.com/v2/natural/nutrients"
     headers = {
         "x-app-id": NUTRITIONIX_APP_ID,
@@ -26,7 +23,7 @@ def get_food_info(food_item):
 
     try:
         response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()  # Raise an error for bad HTTP response
+        response.raise_for_status()
         data = response.json()
         if 'foods' in data and len(data['foods']) > 0:
             food = data['foods'][0]
@@ -44,9 +41,7 @@ def get_food_info(food_item):
 
 
 def log_food(username, food_data):
-    """
-    Log food data to CSV, associated with a specific user.
-    """
+    # Log food data to CSV, associated with a specific user.
     if food_data:
         file_path = "data/nutrition_data.csv"
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
