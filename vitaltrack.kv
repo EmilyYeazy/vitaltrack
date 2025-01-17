@@ -54,7 +54,7 @@
         TextInput:
             id: password
             hint_text: "Password"
-            password: True  # Ensure password input is masked
+            password: True 
             multiline: False
         
         Button:
@@ -98,7 +98,7 @@
             Button:
                 text: "Update"
                 font_size: 24
-                on_press: root.update_dashboard()
+                on_press: root.go_to_update()
 
             Button:
                 text: "Graph"
@@ -114,7 +114,7 @@
             id: food_status
             text: ""
             color: (0, 1, 0, 1)
-            font_size: 20  # Adjust font size for status
+            font_size: 20 
             size_hint: None, None
             size: self.texture_size
             pos_hint: {"center_x": 0.5, "y": 0.1}
@@ -127,7 +127,6 @@
         padding: 20
         spacing: 20
 
-        # Food Info Section
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -145,7 +144,6 @@
                 size_hint_x: 0.2
                 on_press: root.get_food_info(food_input.text)
 
-        # Show Food Info Section
         BoxLayout:
             orientation: 'vertical'
             padding: [10, 10, 10, 10]
@@ -160,7 +158,6 @@
                 height: 100
                 font_size: 18
 
-        # Log Food Section
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -170,7 +167,7 @@
                 text: 'Log Food'
                 on_press: root.log_food(food_input.text)
 
-        # Success Message Section
+  
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -179,13 +176,13 @@
             Label:
                 id: success_message
                 text: ""
-                color: 0, 1, 0, 1  # Green text for success message
+                color: 0, 1, 0, 1 
                 font_size: 16
                 size_hint_x: 0.8
                 valign: 'middle'
                 halign: 'center'
 
-        # Back to Dashboard Button
+        
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -204,7 +201,6 @@
         padding: 20
         spacing: 20
 
-        # Exercise Info Input Section
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -222,7 +218,7 @@
                 size_hint_x: 0.2
                 on_press: root.get_exercise_info(exercise_input.text)
 
-        # Show Exercise Info Section
+       
         BoxLayout:
             orientation: 'vertical'
             padding: [10, 10, 10, 10]
@@ -237,7 +233,7 @@
                 height: 100
                 font_size: 18
 
-        # Log Exercise Section
+     
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -247,7 +243,7 @@
                 text: 'Log Exercise'
                 on_press: root.log_exercise(exercise_input.text)
 
-        # Success Message Section
+      
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -256,13 +252,13 @@
             Label:
                 id: success_message
                 text: ""
-                color: 0, 1, 0, 1  # Green text for success message
+                color: 0, 1, 0, 1 
                 font_size: 16
                 size_hint_x: 0.8
                 valign: 'middle'
                 halign: 'center'
 
-        # Back to Dashboard Button
+ 
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -281,14 +277,14 @@
         spacing: 20
 
         Label:
-            text: "Update Settings"
+            text: "Update"
             font_size: 32
             size_hint: None, None
             size: self.texture_size
             pos_hint: {"center_x": 0.5}
 
         Button:
-            text: "Update User Settings"
+            text: "Update Settings"
             font_size: 24
             on_press: root.go_to_user_settings_update()
 
@@ -310,7 +306,7 @@
         spacing: 20
 
         Label:
-            text: "Update User Settings"
+            text: "Update Settings"
             font_size: 32
             size_hint: None, None
             size: self.texture_size
@@ -376,7 +372,7 @@
     FloatLayout:
         canvas.before:
             Color:
-                rgba: 0, 0, 0, 1  # Black background
+                rgba: 0, 0, 0, 1 
             Rectangle:
                 size: self.size
                 pos: self.pos
@@ -387,7 +383,7 @@
             size_hint: None, None
             size: self.texture_size
             pos_hint: {"center_x": 0.5, "top": 0.9}
-            color: (1, 1, 1, 1)  # White text color
+            color: (1, 1, 1, 1) 
 
         BoxLayout:
             orientation: 'vertical'
