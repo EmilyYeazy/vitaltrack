@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import csv
+import csv, logging
 from datetime import datetime
+
+matplotlib_logger = logging.getLogger('matplotlib')
+matplotlib_logger.setLevel(logging.WARNING)
 
 plt.rcParams['font.family'] = 'Arial'
 
@@ -164,7 +167,7 @@ def plot_bmi(username, weight_data, height_data):
     for i in range(len(weight_data)):
         weight = weight_data.iloc[i]['weight']
         height = height_data.iloc[i]['height']
-        bmi = calculate_bmi(weight, height)  # Correct BMI calculation
+        bmi = calculate_bmi(weight, height)
         bmi_data.append(bmi)
 
     # Plotting the BMI over time (based on registration_date)
