@@ -39,7 +39,7 @@
 
         Button:
             text: "Go to Login"
-            on_press: app.root.current = "login"
+            on_press: root.go_to_login()
 
 <LoginScreen>:
     username: username
@@ -109,15 +109,6 @@
                 text: "Close"
                 font_size: 24
                 on_press: root.close()
-
-        Label:
-            id: food_status
-            text: ""
-            color: (0, 1, 0, 1)
-            font_size: 20 
-            size_hint: None, None
-            size: self.texture_size
-            pos_hint: {"center_x": 0.5, "y": 0.1}
 
 <DietScreen>:
     name: 'diet_screen'
