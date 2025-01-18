@@ -4,7 +4,6 @@ from datetime import datetime
 def register_user(username, password, height, weight):
     # Ensure no field is empty
     if not username or not password or not height or not weight:
-        print("Please fill in all fields!")
         return False
 
     # Check if height and weight are numeric
@@ -12,7 +11,6 @@ def register_user(username, password, height, weight):
         height = float(height)
         weight = float(weight)
     except ValueError:
-        print("Height and Weight must be numeric values.")
         return False
 
     # Open the data/user.csv file to check if the username already exists
@@ -27,11 +25,9 @@ def register_user(username, password, height, weight):
                     break
     except FileNotFoundError:
         # If file does not exist, we can create it with headers
-        print("File not found. Creating a new file.")
         file_exists = False
 
     if user_exists:
-        print("User already exists!")
         return False 
 
     # If user does not exist, append new user data to the CSV file
@@ -40,8 +36,6 @@ def register_user(username, password, height, weight):
         if not file_exists:
             writer.writerow(["username", "password", "height", "weight", "registration_date"])
         writer.writerow([username, password, height, weight, datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
-
-    print("Registration successful!")
     return True
 
 def login_user(username, password):
@@ -53,7 +47,7 @@ def login_user(username, password):
                 continue
             if row[0].strip().lower() == username.strip().lower() and row[1].strip() == password.strip():
                 print(f"Login successful! Welcome {username}!")
-                return True
+                return True            
     print("Invalid username or password!")
     return False
 
@@ -84,11 +78,10 @@ def update_settings(username, new_password):
         with open('data/user.csv', 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(header)  # Write the header row first
-            writer.writerows(user_rows)  # Save all user data with the updates
-        print(f"Password updated for all occurrences of username '{username}'!")
+            writer.writerows(user_rows)  # Save all user data with the update
         return True
     else:
-        print(f"User {username} not found!")
+        print("User not found")
         return False
 
 def update_data(username, new_weight, new_height):
