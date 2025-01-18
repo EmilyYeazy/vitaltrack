@@ -1,3 +1,4 @@
+import os
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
@@ -50,6 +51,13 @@ class RegisterScreen(Screen):
 
         # If registration is successful, switch to the login screen
         self.manager.current = "login"
+
+    def go_to_login(self):
+        # Check if the user data file exists before switching screens
+        if os.path.exists("data/user.csv"):
+            self.manager.current = "login"
+        else:
+            self.ids.register_status.text = "Error: No user data found. Please register first."
 
 class LoginScreen(Screen):
     def __init__(self, **kwargs):

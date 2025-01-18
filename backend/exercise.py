@@ -1,8 +1,6 @@
-import requests
-import csv
+import requests, csv, os
 from datetime import datetime
 from config import config
-import os
 
 NUTRITIONIX_APP_ID = config.NUTRITIONIX_APP_ID
 NUTRITIONIX_API_KEY = config.NUTRITIONIX_API_KEY
@@ -20,7 +18,7 @@ def get_exercise_info(exercise_input):
         return response.json().get('exercises', [])
     except:
         print("Failed to fetch exercise data.")
-        return []
+        return None
 
 def log_to_csv(username, exercise_input, exercises):
     # Log exercise data to CSV, associated with a specific user.
