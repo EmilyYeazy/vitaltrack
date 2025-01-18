@@ -1,5 +1,4 @@
-import requests
-import csv
+import requests, csv
 from datetime import datetime
 from config import config
 import os
